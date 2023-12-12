@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora</title>
+  <style>
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+    }
+    table {
+      width: 300px;
+      margin: 10px 0;
+    }
+    table, td {
+      border: 1px solid #ccc;
+      border-collapse: collapse;
+    }
+    td {
+      padding: 10px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Calculadora</h2>
+
+  <label for="display">Resultado:</label>
+  <input type="text" id="display" disabled>
+  
+  <table>
+    <tr>
+      <td><button onclick="limpiar()">C</button></td>
+      <td><button onclick="borrar()">←</button></td>
+      <td><button onclick="agregarOperacion('%')">%</button></td>
+      <td><button onclick="agregarOperacion('/')">/</button></td>
+    </tr>
+    <tr>
+      <td><button onclick="agregarNumero('7')">7</button></td>
+      <td><button onclick="agregarNumero('8')">8</button></td>
+      <td><button onclick="agregarNumero('9')">9</button></td>
+      <td><button onclick="agregarOperacion('*')">*</button></td>
+    </tr>
+    <tr>
+      <td><button onclick="agregarNumero('4')">4</button></td>
+      <td><button onclick="agregarNumero('5')">5</button></td>
+      <td><button onclick="agregarNumero('6')">6</button></td>
+      <td><button onclick="agregarOperacion('-')">-</button></td>
+    </tr>
+    <tr>
+      <td><button onclick="agregarNumero('1')">1</button></td>
+      <td><button onclick="agregarNumero('2')">2</button></td>
+      <td><button onclick="agregarNumero('3')">3</button></td>
+      <td><button onclick="agregarOperacion('+')">+</button></td>
+    </tr>
+    <tr>
+      <td><button onclick="agregarNumero('0')">0</button></td>
+      <td><button onclick="agregarPunto()">.</button></td>
+      <td><button onclick="calcular()">=</button></td>
+    </tr>
+  </table>
+
+  <script>
+    let operacionActual = '';
+    let operando1 = null;
+    let operando2 = null;
+    let operacionPendiente = null;
+
+    function limpiar() {
+      document.getElementById('display').value = '';
+      operacionActual = '';
+      operando1 = null;
+      operando2 = null;
+      operacionPendiente = null;
+    }
+
+    function borrar() {
+      const display = document.getElementById('display');
+      display.value = display.value.slice(0, -1);
+      operacionActual = display.value;
+    }
+
+    function agregarNumero(numero) {
+      operacionActual += numero;
+      document.getElementById('display').value = operacionActual;
+    }
+
+    function agregarPunto() {
+      if (!operacionActual.includes('.')) {
+        operacionActual += '.';
+        document.getElementById('display').value = operacionActual;
+      }
+    }
+
+    function agregarOperacion(op) {
+      if (operando1 === null) {
+        operando1 = parseFloat(operacionActual);
+        operacionActual = '';
+        document.getElementById('display').value = '';
+        operacionPendiente = op;
+      } else if (operacionPendiente !== null) {
+        operando2 = parseFloat(operacionActual);
+        operando1 = calcularOperacion();
+        operando2 = null;
+        operacionPendiente = op;
+        operacionActual = '';
+        document.getElementById('display').value = '';
+      } else {
+        operando1 = parseFloat(operacionActual);
+        operacionActual = '';
+        document.getElementById('display').value = '';
+        operacionPendiente = op;
+      }
+    }
+
+    function calcular() {
+      if (operando1 !== null && operacionPendiente !== null) {
+        operando2 = parseFloat(operacionActual);
+        const resultado = calcularOperacion();
+        document.getElementById('display').value = resultado;
+        operando1 = resultado;
+        operacionActual = '';
+        operacionPendiente = null;
+        operando2 = null;
+      }
+    }
+
+    function calcularOperacion() {
+      switch (operacionPendiente) {
+        case '+':
+          return operando1 + operando2;
+        case '-':
+          return operando1 - operando2;
+        case '*':
+          return operando1 * operando2;
+        case '/':
+          if (operando2 !== 0) {
+            return operando1 / operando2;
+          } else {
+            alert('No se puede dividir por cero');
+            limpiar();
+            return NaN;
+          }
+        case '%':
+          return operando1 % operando2;
+        default:
+          return NaN;
+      }
+    }
+  </script>
+</body>
+</html>
